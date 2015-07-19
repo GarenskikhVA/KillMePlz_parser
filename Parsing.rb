@@ -1,7 +1,7 @@
     require 'open-uri'
     require 'json'
     require 'rubygems'
-#    require 'nokogiri'
+    require 'nokogiri'
     require 'hpricot'
 
 
@@ -49,21 +49,21 @@ class Parser
       newPost = {}
       tags = Array.new()
 
-      hp = Hpricot(open("http://killpls.me/story/#{postNumber}"))
-      condition = hp.search("#stories > div:nth-child(3) > div:nth-child(2) > a:nth-child(#{tagNum})").inner_html
+      doc = Nokogiri::HTML(open("http://killpls.me/story/#{postNumber}"))
+      condition = doc.css("#stories > div:nth-child(3) > div:nth-child(2) > a:nth-child(#{tagNum})").text
 
       while  condition != 0 do
-        tags[tagNum - 1] = hp.search("#stories > div:nth-child(3) > div:nth-child(2) > a:nth-child(#{tagNum})").inner_html
+        tags[tagNum - 1] = doc.css("#stories > div:nth-child(3) > div:nth-child(2) > a:nth-child(#{tagNum})").text
         tagNum = tagNum + 1
-        condition = hp.search("#stories > div:nth-child(3) > div:nth-child(2) > a:nth-child(#{tagNum})").inner_html.size
+        condition = doc.css("#stories > div:nth-child(3) > div:nth-child(2) > a:nth-child(#{tagNum})").text.size
       end 
 
       newPost[:number] = postNumber
-      newPost[:header] = hp.search("#stories > h2").inner_html
-      newPost[:body] = hp.search("#stories > div:nth-child(4) > div").inner_html.strip
-      newPost[:time] = hp.search("#stories > div:nth-child(3) > div:nth-child(1) > a:nth-child(2)").inner_html
+      newPost[:header] = doc.css("#stories > h2").text
+      newPost[:body] = doc.css("#stories > div:nth-child(4) > div").text.strip
+      newPost[:time] = doc.css("#stories > div:nth-child(3) > div:nth-child(1) > a:nth-child(2)").text
       newPost[:tags] = tags
-      newPost[:rating] = hp.search("#stories > div:nth-child(5) > div:nth-child(1) > div > b").inner_html
+      newPost[:rating] = doc.css("#stories > div:nth-child(5) > div:nth-child(1) > div > b").text
 
       if (newPost[:header] == "Новые истории")
         return nil
@@ -73,9 +73,9 @@ class Parser
   end
 
   def getPostsToJson()
-    hp = Hpricot(open("http://killpls.me/"))
+    doc = Nokogiri::HTML(open("http://killpls.me/"))
 
-    allPosts = hp.search("#stories > div:nth-child(5) > div:nth-child(1) > a:nth-child(1)").inner_html.strip
+    allPosts = doc.css("#stories > div:nth-child(5) > div:nth-child(1) > a:nth-child(1)").text
     allPosts =  allPosts[1..-1]
     
     puts "["
