@@ -51,8 +51,7 @@ class Parser
 
       doc = Nokogiri::HTML(open("http://killpls.me/story/#{postNumber}"))
       condition = doc.css("#stories > div:nth-child(3) > div:nth-child(2) > a:nth-child(#{tagNum})").text
-      puts condition
-
+      
       while  condition != 0 do
         tags[tagNum - 1] = doc.css("#stories > div:nth-child(3) > div:nth-child(2) > a:nth-child(#{tagNum})").text
         tagNum = tagNum + 1
