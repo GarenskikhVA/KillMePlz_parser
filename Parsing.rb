@@ -51,6 +51,7 @@ class Parser
 
       doc = Nokogiri::HTML(open("http://killpls.me/story/#{postNumber}"))
       condition = doc.css("#stories > div:nth-child(3) > div:nth-child(2) > a:nth-child(#{tagNum})").text
+      puts condition
 
       while  condition != 0 do
         tags[tagNum - 1] = doc.css("#stories > div:nth-child(3) > div:nth-child(2) > a:nth-child(#{tagNum})").text
@@ -75,7 +76,7 @@ class Parser
   def getPostsToJson()
     doc = Nokogiri::HTML(open("http://killpls.me/"))
 
-    allPosts = doc.css("#stories > div:nth-child(5) > div:nth-child(1) > a:nth-child(1)").text
+    allPosts = doc.css("#stories > div:nth-child(5) > div:nth-child(1) > a:nth-child(1)").text.strip
     allPosts =  allPosts[1..-1]
     
     puts "["
