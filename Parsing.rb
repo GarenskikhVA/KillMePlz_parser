@@ -68,11 +68,12 @@ class Parser
       if (newPost[:header] == "Новые истории")
         return nil
       else
-        return newPost
+        puts newPost.to_json
+        puts ", "
       end
   end
 
-  def getPostsToJson()
+  def getPostsToOutput()
     doc = Nokogiri::HTML(open("http://killpls.me/"))
 
     allPosts = doc.css("#stories > div:nth-child(5) > div:nth-child(1) > a:nth-child(1)").text.strip
@@ -81,13 +82,16 @@ class Parser
     puts "["
 
     1.upto(allPosts.to_i) { |currNum| 
-      currPost = getPostFromNum(currNum)
-        
-      if currPost != nil 
-        puts currPost.to_json
-        puts ", "
-      end    
+      
+      while Thread.list.size >= 100
+        sleep 0.1
+      end
+
+      thread = Thread.new(currNum){|currNum| getPostFromNum(currNum)}
+
     }
+
+    Thread.list.each{ |t| t.join if t != Thread.main}
 
       puts "]"
   end
@@ -95,5 +99,5 @@ end
 
 #В Ruby я чайник, поэтому вызвал просто в конце всего кода)
 Parse = Parser.new
-SearchPost = Parse.getPostsToJson
+SearchPost = Parse.getPostsToOutput
 
